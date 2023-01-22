@@ -21,4 +21,24 @@ Method TestGetCodeBlockPre()
 	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
 }
 
+Method TestRemoveCommentLineDelimiters()
+{
+    Set tExpected = "comment"
+    Set comment = "// comment"
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).RemoveComments(.comment))
+	Do $$$AssertEquals(comment, tExpected, tExpected_" = "_comment)
+    Set comment = "//comment"
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).RemoveComments(.comment))
+	Do $$$AssertEquals(comment, tExpected, tExpected_" = "_comment)
+    Set comment = ";comment"
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).RemoveComments(.comment))
+	Do $$$AssertEquals(comment, tExpected, tExpected_" = "_comment)
+    Set comment = "; comment"
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).RemoveComments(.comment))
+	Do $$$AssertEquals(comment, tExpected, tExpected_" = "_comment)
+    Set comment = "1"
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).RemoveComments(.comment))
+	Do $$$AssertEquals(comment, "1", "1 = "_comment)
+}
+
 }

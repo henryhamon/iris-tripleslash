@@ -55,15 +55,15 @@ ClassMethod RemoveComments(ByRef pValue As %String) As %Status
 {
 	Set tSC = $$$OK
 	Try {
-		Set commentLineDelimiters = $ListBuild("//",";")
+		Set commentLineDelimiters = $ListBuild("// ","; ","//",";")
 		For k=1:1:$ListLength(commentLineDelimiters){
-			Set pValue = $ListFromString(pValue, $List(commentLineDelimiters,k)) // <- comment
-			Set pValue = $List(pValue,1)
+            Set delimiter = $List(commentLineDelimiters,k)
+			Set:($Find(pValue, delimiter)) pValue = $Replace(pValue, delimiter,"") // <- comment
 		}
 	} Catch tException {
 		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
 	}
-	Quit tSC
+	Return tSC
 }
 
 }
