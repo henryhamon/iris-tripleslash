@@ -45,7 +45,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ## load and test module
 ```
 
-zpm "load /home/irisowner/irisdev"
+zpm "load /irisrun/repo"
 
 zpm "test dc-sample"
 ```
