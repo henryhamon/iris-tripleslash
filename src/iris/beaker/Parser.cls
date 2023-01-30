@@ -82,4 +82,32 @@ ClassMethod LinesTrim(ByRef codeBlock As %ListOfDataTypes) As %Status
     Return tSC
 }
 
+ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String) As %Status
+{
+    Set lst = ""
+    For idx=1:1:list.Count() {
+        Set $List(lst, * + 1) = list.GetAt(idx)
+    }
+    Set block = $ListToString(lst, $Char(13,10))
+    Return $$$OK
+}
+
+ClassMethod AssertOkNotOk(ByRef list As %ListOfDataTypes) As %Status
+{
+    Set tSC = $$$OK
+	Try {
+        Do ..ListToStr(list, .codeBlock)
+        Set re = ##class(%SYS.Python).Import("re")
+        Set pttrn = re.compile("^(([dD]([oO]|))\s+)*")
+        Set x = re.finditer(codeBlock)
+		
+	} Catch tException {
+		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
+        W !,$System.Status.GetErrorText(tSC)
+	}
+	Return tSC
+}
+
+/// ^(Write\s+)((.|\n)*?)(Set\s|Do\s)
+
 }

@@ -57,6 +57,56 @@ Method TestLinesTrim()
 	Do $$$AssertEquals(codeBlock.GetAt(3), tExpected, tExpected_" = "_codeBlock.GetAt(3))
 }
 
+Method TestLstToStr()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Do ##class(iris.beaker.Core).Execute()")
+    Do codeBlock.Insert("Write 1")
+    Do codeBlock.Insert("1")
+    Do codeBlock.Insert("Set var = 2")
+    Do codeBlock.Insert("Write var")
+    Do codeBlock.Insert("2")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Do ##class(iris.beaker.Core).Execute()" _ $Char(13,10)_
+        "Write 1" _ $Char(13,10)_
+        "1" _ $Char(13,10)_
+        "Set var = 2" _ $Char(13,10)_
+        "Write var" _ $Char(13,10)_
+        "2" 
+    Do $$$AssertEquals(block, tExpected,block _ "|" _ tExpected)
+    Kill block
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Do $$$AssertEquals(block, "",block)
+}
+
+Method TestAssertOkNotOk()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Write 1")
+    Do codeBlock.Insert("1")
+    Do codeBlock.Insert("Do ##class(iris.beaker.Core).Execute()")
+    Do codeBlock.Insert("$$$OK")
+    Do codeBlock.Insert("Set var = 2")
+    Do codeBlock.Insert("Write var")
+    Do codeBlock.Insert("2")
+    Do codeBlock.Insert("D ##class(iris.beaker.Core).Execute()")
+    Do codeBlock.Insert("$$$NotOK")
+    Do codeBlock.Insert("Do ##class(iris.beaker.Core).Execute()")
+    Do codeBlock.Insert("$$$ERROR")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertOkNotOk(.codeBlock))
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Write 1" _ $Char(13,10)_
+        "1" _ $Char(13,10)_
+        "Do $$$AssertStatusOK(##class(iris.beaker.Core).Execute())" _ $Char(13,10)_
+        "Set var = 2" _ $Char(13,10)_
+        "Write var" _ $Char(13,10)_
+        "2" _
+        "Do $$$AssertStatusNotOK(##class(iris.beaker.Core).Execute())" _ $Char(13,10)_
+        "Do $$$AssertStatusNotOK(##class(iris.beaker.Core).Execute())"
+    Do $$$AssertEquals(block, tExpected,block _ "|" _ tExpected)
+}
+
 Method TestIdentifyWriteCommand()
 {
     Set codeBlock = ##class(%ListOfDataTypes).%New()
