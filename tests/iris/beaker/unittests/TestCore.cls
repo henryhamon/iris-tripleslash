@@ -26,4 +26,14 @@ Method TestEnvironmentOk()
     Set ^UnitTestRoot = current
 }
 
+Method TestBuildTestClass()
+{
+    Set className = "dc.sample.ObjectScript"
+    Set tExpected = "%Dictionary.ClassDefinition"
+    Do ##class(iris.beaker.Core).BuildTestClass(className, .tClass)
+    Set tResult = $ClassName(tClass)
+    Do $$$AssertEquals(tResult, tExpected, tExpected _ " = " _ tResult)
+    Do $$$AssertNotEquals(tClass.Name, className, className _ " = " _ tClass.Name)
+}
+
 }

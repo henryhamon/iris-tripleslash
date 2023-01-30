@@ -66,4 +66,20 @@ ClassMethod RemoveComments(ByRef pValue As %String) As %Status
 	Return tSC
 }
 
+ClassMethod LinesTrim(ByRef codeBlock As %ListOfDataTypes) As %Status
+{
+	Set tSC = $$$OK
+    Set code = ##class(%ListOfDataTypes).%New()
+    Try {
+        For idx=1:1:codeBlock.Count() {
+            Set matcher=##class(%Regex.Matcher).%New("^[\s\t]+|[\s]+$")                             
+            Set matcher.Text = codeBlock.GetAt(idx)
+            Do codeBlock.SetAt(matcher.ReplaceAll(""), idx)
+        }
+	} Catch tException {
+		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
+	}
+    Return tSC
+}
+
 }

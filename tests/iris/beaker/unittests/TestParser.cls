@@ -41,4 +41,27 @@ Method TestRemoveCommentLineDelimiters()
 	Do $$$AssertEquals(comment, "1", "1 = "_comment)
 }
 
+Method TestLinesTrim()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("   Write 1 ")
+    Do codeBlock.Insert("; 1")
+    Do codeBlock.Insert("  Set 1    ")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).LinesTrim(.codeBlock))
+
+    Set tExpected = "Write 1"
+	Do $$$AssertEquals(codeBlock.GetAt(1), tExpected, tExpected_" = "_codeBlock.GetAt(1))
+    Set tExpected = "; 1"
+	Do $$$AssertEquals(codeBlock.GetAt(2), tExpected, tExpected_" = "_codeBlock.GetAt(2))
+    Set tExpected = "Set 1"
+	Do $$$AssertEquals(codeBlock.GetAt(3), tExpected, tExpected_" = "_codeBlock.GetAt(3))
+}
+
+Method TestIdentifyWriteCommand()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Write 1")
+    Do codeBlock.Insert("; 1")
+}
+
 }
