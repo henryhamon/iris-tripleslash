@@ -95,19 +95,35 @@ ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String) As %Sta
 ClassMethod AssertOkNotOk(ByRef list As %ListOfDataTypes) As %Status
 {
     Set tSC = $$$OK
+    Set asserts = $ListBuild("$$$OK", "$$$NotOK", "$$$ERROR")
 	Try {
         Do ..ListToStr(list, .codeBlock)
-        Set re = ##class(%SYS.Python).Import("re")
-        Set pttrn = re.compile("^(([dD]([oO]|))\s+)*")
-        Set x = re.finditer(codeBlock)
-		
+        Set codeBlock = $Replace(codeBlock, $C(13,10), "\n")
+        Set codeAux = codeBlock
+        Set matcher=##class(%Regex.Matcher).%New("(([dD]([oO]|))\s+)(.|\n)*?(\${3}\w+)")                             
+        Set matcher.Text = codeBlock
+        While matcher.Locate() {
+            Set assertStr = "NotOK"
+            Set code = $Extract(codeBlock,matcher.Start - 2, matcher.End + 1)
+            Set replace = code
+            Set:($Find(replace,$List(asserts,1))) assertStr = "OK"
+            Set replace = $Replace($Piece(replace, " ", 2, *),"\n", "")
+            Set ptr = 0
+            While $ListNext(asserts, ptr, value) {
+                Set replace = $Replace(replace, value, "")
+            }
+            Set codeAux = $Replace(codeAux, code, "\nDo $$$AssertStatus"_assertStr_"(" _ replace _ ")")
+        }	
+        Set list = ##class(%ListOfDataTypes).%New()
+        Set ptr = 0
+        Set code = $ListFromString(codeAux, "\n")
+        While ($ListNext(code, ptr, line)) {
+            Do list.Insert(line)
+        }
 	} Catch tException {
 		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
-        W !,$System.Status.GetErrorText(tSC)
 	}
 	Return tSC
 }
-
-/// ^(Write\s+)((.|\n)*?)(Set\s|Do\s)
 
 }
