@@ -9,7 +9,6 @@
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="iris.beaker.PKG"/>
       <UnitTest Name="/tests" Package="iris.beaker.unittests" Phase="test"/>
-
     </Module>
   </Document>
 </Export>

@@ -83,7 +83,7 @@ zn "%SYS" \
 
 
 ```
-do $SYSTEM.OBJ.ImportDir("/opt/irisbuild/src",, "ck") 
+do $SYSTEM.OBJ.ImportDir("/opt/irisdev/src",, "ck") 
 ```   
 
 
