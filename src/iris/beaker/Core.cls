@@ -65,4 +65,19 @@ ClassMethod BuildTestClass(className As %String, Output testClass As %Dictionary
     Set testClass = ##class(%Dictionary.ClassDefinition).%New(className)
 }
 
+ClassMethod RunTest(pUnitTestRoot As %String = "/irisrun/repo", pTestPath = "/tests") As %Status
+{
+    Set st = $$$OK
+    Set unitTestRoot = $G(^UnitTestRoot)
+    Try {
+        Set ^UnitTestRoot = pUnitTestRoot
+        Do ##class(%UnitTest.Manager).RunTest(pTestPath)
+    } Catch(e) {
+        Set st = e.AsStatus()
+    }
+    Set:(unitTestRoot '= "") ^UnitTestRoot = unitTestRoot
+    Kill:(unitTestRoot = "") ^UnitTestRoot
+    Return st
+}
+
 }
