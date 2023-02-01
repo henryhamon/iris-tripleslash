@@ -105,6 +105,7 @@ ClassMethod AssertOkNotOk(ByRef list As %ListOfDataTypes) As %Status
         While matcher.Locate() {
             Set assertStr = "NotOK"
             Set code = $Extract(codeBlock,matcher.Start - 2, matcher.End + 1)
+            Set:($Extract(code,* - 1, *)="\n") code = $Extract(code,1, * - 2)
             Set replace = code
             Set:($Find(replace,$List(asserts,1))) assertStr = "OK"
             Set replace = $Replace($Piece(replace, " ", 2, *),"\n", "")

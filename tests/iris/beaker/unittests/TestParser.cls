@@ -101,10 +101,10 @@ Method TestAssertOkNotOk()
         "Do $$$AssertStatusOK(##class(iris.beaker.Core).Execute())" _ $Char(13,10)_
         "Set var = 2" _ $Char(13,10)_
         "Write var" _ $Char(13,10)_
-        "2" _
+        "2" _$Char(13,10)_
         "Do $$$AssertStatusNotOK(##class(iris.beaker.Core).Execute())" _ $Char(13,10)_
         "Do $$$AssertStatusNotOK(##class(iris.beaker.Core).Execute())"
-    Do $$$AssertEquals(block, tExpected,block _ "|" _ tExpected)
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
 }
 
 Method TestIdentifyWriteCommand()
