@@ -82,13 +82,14 @@ ClassMethod LinesTrim(ByRef codeBlock As %ListOfDataTypes) As %Status
     Return tSC
 }
 
-ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String) As %Status
+ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String, breakSeparator As %String = "") As %Status
 {
     Set lst = ""
+    Set:(breakSeparator = "" ) breakSeparator = $Char(13,10)
     For idx=1:1:list.Count() {
         Set $List(lst, * + 1) = list.GetAt(idx)
     }
-    Set block = $ListToString(lst, $Char(13,10))
+    Set block = $ListToString(lst, breakSeparator)
     Return $$$OK
 }
 
@@ -97,8 +98,7 @@ ClassMethod AssertOkNotOk(ByRef list As %ListOfDataTypes) As %Status
     Set tSC = $$$OK
     Set asserts = $ListBuild("$$$OK", "$$$NotOK", "$$$ERROR")
 	Try {
-        Do ..ListToStr(list, .codeBlock)
-        Set codeBlock = $Replace(codeBlock, $C(13,10), "\n")
+        Do ..ListToStr(list, .codeBlock, "\n")
         Set codeAux = codeBlock
         Set matcher=##class(%Regex.Matcher).%New("(([dD]([oO]|))\s+)(.|\n)*?(\${3}\w+)")                             
         Set matcher.Text = codeBlock
