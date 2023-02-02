@@ -33,7 +33,23 @@ Method TestBuildTestClass()
     Do ##class(iris.beaker.Core).BuildTestClass(className, .tClass)
     Set tResult = $ClassName(tClass)
     Do $$$AssertEquals(tResult, tExpected, tExpected _ " = " _ tResult)
+    Do $$$AssertEquals(tClass.Super, "%UnitTest.TestCase", tExpected _ " = %UnitTest.TestCase" )
     Do $$$AssertNotEquals(tClass.Name, className, className _ " = " _ tClass.Name)
+}
+
+Method TestBuildTestMethod()
+{
+    Set tExpected = "%Dictionary.MethodDefinition"
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Set a = 1")
+    Do ##class(iris.beaker.Core).BuildTestMethod(.tMethod, "BuildMethod", codeBlock)
+    Set tResult = $ClassName(tMethod)
+    Do $$$AssertEquals(tResult, tExpected, tExpected _ " = " _ tResult)
+    Do $$$AssertEquals(tMethod.Name, "TestBuildMethod", "TestBuildMethod"_ " = " _ tMethod.Name)
+    Do $$$AssertNotTrue(tMethod.ClassMethod)
+    Set tImplementation = tMethod.Implementation.Read()
+    Set tExpected = "  "_codeBlock.GetAt(1)_$Char(13,10)
+    Do $$$AssertEquals(tImplementation, tExpected, tImplementation _ "|" _tExpected)
 }
 
 }
