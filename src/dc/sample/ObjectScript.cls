@@ -1,6 +1,10 @@
 Class dc.sample.ObjectScript
 {
 
+/// <example>
+/// Write ##class(dc.sample.ObjectScript).Test()
+/// 42
+/// </example>
 ClassMethod Test() As %Status
 {
     set a=42 

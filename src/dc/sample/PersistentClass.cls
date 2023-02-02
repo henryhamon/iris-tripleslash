@@ -3,6 +3,11 @@ Class dc.sample.PersistentClass Extends %Persistent
 
 Property Test As %VarString;
 
+/// Empty Test
+/// <pre>
+/// Do ##class(dc.sample.PersistentClass).CreateRecord()
+/// $$$OK
+/// </pre>
 ClassMethod CreateRecord(ByRef id As %Integer) As %Status
 {
     set sc=$$$OK
