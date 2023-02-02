@@ -1,7 +1,7 @@
-Class iris.beaker.Core Extends %RegisteredObject
+Class iris.tripleSlash.Core Extends %RegisteredObject
 {
 
-Parameter BeakerPackager = "iris.beaker.tst.";
+Parameter TripleSlashPackage = "iris.tripleSlash.tst.";
 
 Parameter DefaultUnitTestRoot = "/irisrun/repo";
 
@@ -99,7 +99,7 @@ Query FindByPackage(packageName As %String) As %SQLQuery [ SqlProc ]
 
 ClassMethod BuildTestClass(className As %String, Output testClass As %Dictionary.ClassDefinition)
 {
-	Set className = ..#BeakerPackager _ $Piece(className, ".", *)
+	Set className = ..#TripleSlashPackage _ $Piece(className, ".", *)
     Set testClass = ##class(%Dictionary.ClassDefinition).%New(className)
     Set testClass.Super = "%UnitTest.TestCase"
 }
@@ -141,7 +141,7 @@ Method ExportTestPackage() As %Status [ Private ]
     Set unitTestRoot = $Get(^UnitTestRoot)
     Set:(unitTestRoot="") unitTestRoot = ..#DefaultUnitTestRoot
     Set path = unitTestRoot _ ..TestPath
-    Return $system.OBJ.ExportPackage($Extract(..#BeakerPackager, 1, *-1), path _ ..Hash _".xml")
+    Return $system.OBJ.ExportPackage($Extract(..#TripleSlashPackage, 1, *-1), path _ ..Hash _".xml")
 }
 
 }
