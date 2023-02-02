@@ -3,13 +3,24 @@ Class iris.beaker.Core Extends %RegisteredObject
 
 Parameter BeakerPackager = "iris.beaker.tst.";
 
+Parameter DefaultUnitTestRoot = "/irisrun/repo";
+
 Property ProjectPackage As %String;
+
+Property KeepTestClasses As %Boolean [ InitialExpression = 0 ];
+
+Property KeepTestFile As %Boolean [ InitialExpression = 0 ];
+
+Property TestPath As %String [ InitialExpression = "/tests" ];
 
 Property Hash As %String [ Private ];
 
-Method %OnNew(pProjectPackage As %String = "") As %Status [ Private, ServerOnly = 1 ]
+Method %OnNew(projectPackage As %String = "", testPath As %String = "", keepTestClasses As %Boolean = "", keepTestFile As %Boolean = "") As %Status [ Private, ServerOnly = 1 ]
 {
-	Set:pProjectPackage'="" ..ProjectPackage = pProjectPackage
+	Set:(projectPackage'="") ..ProjectPackage = projectPackage
+	Set:(testPath'="") ..TestPath = testPath
+	Set:(keepTestClasses'="") ..KeepTestClasses = keepTestClasses
+	Set:(keepTestFile'="") ..KeepTestFile = keepTestFile
 	Set ..Hash = ""
 	For i=1:1:10 {
 		Set ..Hash = ..Hash _ $Char($Random(26)+97)
@@ -26,11 +37,24 @@ ClassMethod EnvValidation() As %Status
 Method Execute(className As %String = "") As %Status
 {
     Set st = $$$OK
+    Try {
+        //$$$ThrowOnError(..EnvValidation())
+        $$$ThrowOnError(..PrepareTestClass(className))
+        $$$ThrowOnError(..ExportTestPackage())
+        $$$ThrowOnError(..RunTest())
+    } Catch(e) {
+        Set st = e.AsStatus()
+    }
+    Return st
+}
+
+Method PrepareTestClass(className As %String = "") As %Status [ Private ]
+{
+    Set st = $$$OK
     Set:(..ProjectPackage'="") className = ""
     Set klass = ""
     Set testClass = ""
     Try {
-        //$$$ThrowOnError(..EnvValidation())
         Set:(className="") rs = ..FindByPackageFunc(..ProjectPackage)
         Set:(className'="") rs = ..FindByClassFunc(className)
         While rs.%Next() {
@@ -96,19 +120,28 @@ ClassMethod BuildTestMethod(Output testMethod As %Dictionary.MethodDefinition, n
     Return st
 }
 
-ClassMethod RunTest(pUnitTestRoot As %String = "/irisrun/repo", pTestPath = "/tests") As %Status
+Method RunTest(p, pTestPath = "/tests") As %Status [ Private ]
 {
     Set st = $$$OK
-    Set unitTestRoot = $G(^UnitTestRoot)
+    Set unitTestRoot = $Get(^UnitTestRoot)
+    Set:(unitTestRoot="") ^UnitTestRoot = ..#DefaultUnitTestRoot
+    Set qualifiers = ""
     Try {
-        Set ^UnitTestRoot = pUnitTestRoot
-        Do ##class(%UnitTest.Manager).RunTest(pTestPath)
+        Set:('..KeepTestFile) qualifiers = qualifiers _ "/delete"
+        Do ##class(%UnitTest.Manager).RunTest(pTestPath, qualifiers)
     } Catch(e) {
         Set st = e.AsStatus()
     }
-    Set:(unitTestRoot '= "") ^UnitTestRoot = unitTestRoot
     Kill:(unitTestRoot = "") ^UnitTestRoot
     Return st
+}
+
+Method ExportTestPackage() As %Status [ Private ]
+{
+    Set unitTestRoot = $Get(^UnitTestRoot)
+    Set:(unitTestRoot="") unitTestRoot = ..#DefaultUnitTestRoot
+    Set path = unitTestRoot _ ..TestPath
+    Return $system.OBJ.ExportPackage($Extract(..#BeakerPackager, 1, *-1), path _ ..Hash _".xml")
 }
 
 }
