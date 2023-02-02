@@ -93,7 +93,7 @@ ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String, breakSe
     Return $$$OK
 }
 
-ClassMethod AssertOkNotOk(ByRef list As %ListOfDataTypes) As %Status
+ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
 {
     Set tSC = $$$OK
     Set asserts = $ListBuild("$$$OK", "$$$NotOK", "$$$ERROR")

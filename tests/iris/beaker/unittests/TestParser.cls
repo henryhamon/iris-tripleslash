@@ -94,7 +94,7 @@ Method TestAssertOkNotOk()
     Do codeBlock.Insert("$$$NotOK")
     Do codeBlock.Insert("Do ##class(iris.beaker.Core).Execute()")
     Do codeBlock.Insert("$$$ERROR")
-    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertOkNotOk(.codeBlock))
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertOk(.codeBlock))
     Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
     Set tExpected = "Write 1" _ $Char(13,10)_
         "1" _ $Char(13,10)_
@@ -111,7 +111,7 @@ Method TestIdentifyWriteCommand()
 {
     Set codeBlock = ##class(%ListOfDataTypes).%New()
     Do codeBlock.Insert("Write 1")
-    Do codeBlock.Insert("; 1")
+    Do codeBlock.Insert("1")
 }
 
 }

@@ -11,7 +11,7 @@ Method %OnNew(pProjectPackage As %String = "") As %Status [ Private, ServerOnly 
 {
 	Set:pProjectPackage'="" ..ProjectPackage = pProjectPackage
 	Set ..Hash = ""
-	For i=1:1:5 {
+	For i=1:1:10 {
 		Set ..Hash = ..Hash _ $Char($Random(26)+97)
 	}
 	Return $$$OK
@@ -42,7 +42,7 @@ Method Execute(className As %String = "") As %Status
             }
             /// Parser
             $$$ThrowOnError(##class(Parser).GetCodeBlock(rs.Block, .codeBlock))
-            $$$ThrowOnError(##class(Parser).AssertOkNotOk(.codeBlock))
+            $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock))
             $$$ThrowOnError(..BuildTestMethod(.testMethod, rs.Method, codeBlock))
             Do testClass.Methods.Insert(testMethod)
         }
