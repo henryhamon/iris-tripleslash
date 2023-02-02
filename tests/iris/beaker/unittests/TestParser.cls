@@ -107,7 +107,7 @@ Method TestAssertOkNotOk()
     Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
 }
 
-Method TestIdentifyWriteCommand()
+Method TestAssertEqual()
 {
     Set codeBlock = ##class(%ListOfDataTypes).%New()
     Do codeBlock.Insert("Write 1")
@@ -115,6 +115,26 @@ Method TestIdentifyWriteCommand()
     Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertEql(.codeBlock))
     Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
     Set tExpected = "Do $$$AssertEquals(1, 1)"
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("S number = 1")
+    Do codeBlock.Insert("W number")
+    Do codeBlock.Insert("1")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertEql(.codeBlock))
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "S number = 1"_$C(13,10)_ "Do $$$AssertEquals(number, 1)"
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
+}
+
+Method TestAssertNotEqual()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Set number = 3")
+    Do codeBlock.Insert("Write number")
+    Do codeBlock.Insert("'1")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertEql(.codeBlock))
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Set number = 3"_$C(13,10)_ "Do $$$AssertNotEquals(number, 1)"
     Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
 }
 
