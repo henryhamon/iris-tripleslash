@@ -112,6 +112,10 @@ Method TestIdentifyWriteCommand()
     Set codeBlock = ##class(%ListOfDataTypes).%New()
     Do codeBlock.Insert("Write 1")
     Do codeBlock.Insert("1")
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).AssertEql(.codeBlock))
+    Do $$$AssertStatusOK(##class(iris.beaker.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Do $$$AssertEquals(1, 1)"
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
 }
 
 }

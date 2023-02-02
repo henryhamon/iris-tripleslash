@@ -43,14 +43,13 @@ Method Execute(className As %String = "") As %Status
             /// Parser
             $$$ThrowOnError(##class(Parser).GetCodeBlock(rs.Block, .codeBlock))
             $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock))
+            $$$ThrowOnError(##class(Parser).AssertEql(.codeBlock))
             $$$ThrowOnError(..BuildTestMethod(.testMethod, rs.Method, codeBlock))
             Do testClass.Methods.Insert(testMethod)
         }
         Do:($IsObject(testClass)) testClass.%Save()
     } Catch(e) {
         Set st = e.AsStatus()
-        w $SYSTEM.Status.GetErrorText(st)
-
     }
     Return st
 }

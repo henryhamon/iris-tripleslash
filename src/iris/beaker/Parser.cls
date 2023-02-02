@@ -127,4 +127,33 @@ ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
 	Return tSC
 }
 
+ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
+{
+    Set tSC = $$$OK
+    Set notSymbol = $ListBuild("'", "!")
+	Try {
+        Set code = ##class(%ListOfDataTypes).%New()
+        For idx=1:1:list.Count() {
+            Set assertStr = ""
+            Set line = list.GetAt(idx)
+            If ($Find($ZConvert(line,"l"), "write ")||($Find($ZConvert(line,"l"), "w "))){
+                Set idx = idx + 1
+                Set nextLine = list.GetAt(idx)
+                Set line = $Piece(line, " ", 2, *) // Remove write command
+                Do ..RemoveComments(.nextLine)
+                If ($ListFind(notSymbol,$Extract(nextLine,1,1))) {
+                    Set nextLine = $Extract(nextLine, 2, *)
+                    Set assertStr = "Not"
+                }
+                Set line = "Do $$$Assert"_ assertStr_"Equals("_line_", "_ nextLine _ ")"
+            }
+            Do code.Insert(line)
+        }
+        Set list = code
+	} Catch tException {
+		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
+	}
+	Return tSC
+}
+
 }
