@@ -1,10 +1,10 @@
-Class tests.iris.beaker.unittests.TestCore Extends %UnitTest.TestCase
+Class tests.iris.tripleSlash.unittests.TestCore Extends %UnitTest.TestCase
 {
 
 Method TestProjectPackageOnNew()
 {
     Set tExpected = "dc.sample"
-    Set core = ##class(iris.beaker.Core).%New(tExpected)
+    Set core = ##class(iris.tripleSlash.Core).%New(tExpected)
     Do $$$AssertEquals(core.ProjectPackage, tExpected, tExpected _ " = " _ core.ProjectPackage)
 }
 
@@ -13,7 +13,7 @@ Method TestEnvironmentNotOk()
 {
     Set current = ^UnitTestRoot
     Set ^UnitTestRoot=""
-    Do $$$AssertStatusNotOK(##class(iris.beaker.Core).EnvValidation())
+    Do $$$AssertStatusNotOK(##class(iris.tripleSlash.Core).EnvValidation())
     Set ^UnitTestRoot = current
 }
 
@@ -22,7 +22,7 @@ Method TestEnvironmentOk()
 {
     Set current = ^UnitTestRoot
     Set ^UnitTestRoot="test"
-    Do $$$AssertStatusOK(##class(iris.beaker.Core).EnvValidation())
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Core).EnvValidation())
     Set ^UnitTestRoot = current
 }
 
@@ -30,7 +30,7 @@ Method TestBuildTestClass()
 {
     Set className = "dc.sample.ObjectScript"
     Set tExpected = "%Dictionary.ClassDefinition"
-    Do ##class(iris.beaker.Core).BuildTestClass(className, .tClass)
+    Do ##class(iris.tripleSlash.Core).BuildTestClass(className, .tClass)
     Set tResult = $ClassName(tClass)
     Do $$$AssertEquals(tResult, tExpected, tExpected _ " = " _ tResult)
     Do $$$AssertEquals(tClass.Super, "%UnitTest.TestCase", tExpected _ " = %UnitTest.TestCase" )
@@ -42,7 +42,7 @@ Method TestBuildTestMethod()
     Set tExpected = "%Dictionary.MethodDefinition"
     Set codeBlock = ##class(%ListOfDataTypes).%New()
     Do codeBlock.Insert("Set a = 1")
-    Do ##class(iris.beaker.Core).BuildTestMethod(.tMethod, "BuildMethod", codeBlock)
+    Do ##class(iris.tripleSlash.Core).BuildTestMethod(.tMethod, "BuildMethod", codeBlock)
     Set tResult = $ClassName(tMethod)
     Do $$$AssertEquals(tResult, tExpected, tExpected _ " = " _ tResult)
     Do $$$AssertEquals(tMethod.Name, "TestBuildMethod", "TestBuildMethod"_ " = " _ tMethod.Name)

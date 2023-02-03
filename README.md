@@ -3,11 +3,19 @@
  [![Reliability Rating](https://community.objectscriptquality.com/api/project_badges/measure?project=intersystems_iris_community%2Fintersystems-iris-dev-template&metric=reliability_rating)](https://community.objectscriptquality.com/dashboard?id=intersystems_iris_community%2Fintersystems-iris-dev-template)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat&logo=AdGuard)](LICENSE)
-# intersystems-iris-dev-template
-This is a basic template for a development environment to work with ObjectScript in InterSystems IRIS. It helps you edit, compile, commit/push, debug and test your ObjectScript code. It also aids in packaging your application as a module installable with ZPM. 
-The template is embedded python compatible.
+
+# iris-tripleSlash
+
+![3slash logo](./assert/3slash.png)
+
+/// (Triple Slash)
+Generate unit test cases from the documentation.
 
 ## Description
+
+ /// TripleSlash allow us to generate tests from code examples found in method descriptions.
+
+
 This repository provides a read-to-go development environment for coding productively with InterSystems ObjectScript. This template:
 * Runs InterSystems IRIS Community Edition in a docker container
 * Creates a new namespace and database IRISAPP

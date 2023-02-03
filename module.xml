@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="iris-beaker.ZPM">
+  <Document name="iris-tripleSlash.ZPM">
     <Module>
-      <Name>iris-beaker</Name>
+      <Name>iris-tripleSlash</Name>
       <Version>1.0.0</Version>
-      <Description>Basic InterSystems IRIS Development Template</Description>
+      <Description>/// Generate unit test cases from the documentation.</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
-      <Resource Name="iris.beaker.PKG"/>
-      <UnitTest Name="/tests" Package="iris.beaker.unittests" Phase="test"/>
+      <Resource Name="iris.tripleSlash.PKG"/>
+      <UnitTest Name="/tests" Package="iris.tripleSlash.unittests" Phase="test"/>
     </Module>
   </Document>
 </Export>

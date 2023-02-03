@@ -1,4 +1,4 @@
-Class iris.beaker.Parser Extends %RegisteredObject
+Class iris.tripleSlash.Parser Extends %RegisteredObject
 {
 
 Parameter exampleOpen = "<example>";
