@@ -138,4 +138,20 @@ Method TestAssertNotEqual()
     Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
 }
 
+Method TestGetMultipleCodeBlock()
+{
+    Set block = "Documentation Test"_$Char(13,10)_"<pre>"_$Char(13,10)_
+        "Write 1"_$Char(13,10)_"; 1"_$Char(13,10)_"</pre>"_
+        "Dont get this line"_$Char(13,10)_"</pre>"_
+        "<example>"_$Char(13,10)_
+        "Write 3"_$Char(13,10)_"3"_$Char(13,10)_"</example>"
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).GetCodeBlock(block, .codeBlock))
+    Set tExpected = 4
+    Set tResults = codeBlock.Count()
+	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).ListToStr(codeBlock, .tResults))
+    Set tExpected = "Write 1"_$C(13,10)_ "; 1"_$C(13,10)_"Write 3"_$C(13,10)_ "3"
+	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
+}
+
 }

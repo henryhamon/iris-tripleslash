@@ -1,18 +1,6 @@
 Class iris.tripleSlash.Parser Extends %RegisteredObject
 {
 
-Parameter exampleOpen = "<example>";
-
-Parameter exampleClose = "</example>";
-
-Parameter exampleSub = 11;
-
-Parameter preOpen = "<pre>";
-
-Parameter preClose = "</pre>";
-
-Parameter preSub = 7;
-
 Parameter BL = {$Char(13,10)};
 
 ClassMethod GetCodeBlock(pBlock As %String, Output codeBlock As %ListOfDataTypes) As %Status
@@ -20,15 +8,12 @@ ClassMethod GetCodeBlock(pBlock As %String, Output codeBlock As %ListOfDataTypes
 	Set tSC = $$$OK
     Set codeBlock = ##class(%ListOfDataTypes).%New()
 	Try {
-        For tag=1:1:2 {
-            Set block = ..ExtractContent(tag, pBlock)
-            Continue:(block="")
-            Set lstBlock = $ListFromString(block, ..#BL)
-            Set pos = 0
-            While $ListNext(lstBlock, pos, value) {
-                Continue:(value="")
-                Do codeBlock.Insert(value)
-            }
+        Set block = ..ExtractContent(1, pBlock)
+        Set lstBlock = $ListFromString(block, ..#BL)
+        Set pos = 0
+        While $ListNext(lstBlock, pos, value) {
+            Continue:(value="")
+            Do codeBlock.Insert(value)
         }
 
 	} Catch tException {
@@ -39,16 +24,18 @@ ClassMethod GetCodeBlock(pBlock As %String, Output codeBlock As %ListOfDataTypes
 
 ClassMethod ExtractContent(tag As %Integer, block As %String) As %String [ Private ]
 {
-    Set tagOpen = ..#exampleOpen
-    Set tagClose = ..#exampleClose
-    Set sub = ..#exampleSub
-    If (tag = 2) {
-        Set tagOpen = ..#preOpen
-        Set tagClose = ..#preClose
-        Set sub = ..#preSub
-
+    Set content = ""
+    Set block = $Replace(block, $Char(13,10), "\n")
+    Set regexClean=##class(%Regex.Matcher).%New("(i?)(<(example|pre)>)|(<\/(example|pre)>)")                             
+    Set matcher=##class(%Regex.Matcher).%New("(i?)<(example|pre)>.*?<\/(example|pre)>")                             
+    Set matcher.Text = block
+    While matcher.Locate() {
+        Set regexClean.Text = matcher.Group
+        Set content = content _ regexClean.ReplaceAll("")
+        Set regexClean.Text = ""
     }
-    Quit $Extract(block, $Find(block, tagOpen), $Find(block, tagClose) - sub)
+    Set content = $Replace(content, "\n", $Char(13,10))
+    Return content
 }
 
 ClassMethod RemoveComments(ByRef pValue As %String) As %Status

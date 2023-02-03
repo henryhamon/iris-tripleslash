@@ -112,6 +112,7 @@ Query FindByClass(className As %String) As %SQLQuery [ SqlProc ]
 	Where parent = :className
 	And Abstract = 0
 	And (Description like '%Examples%' OR Description like '%<example>%' OR Description like '%<pre>%')
+    Order By sequenceNumber
 }
 
 Query FindByPackage(packageName As %String) As %SQLQuery [ SqlProc ]
@@ -121,7 +122,7 @@ Query FindByPackage(packageName As %String) As %SQLQuery [ SqlProc ]
 	Where parent %StartsWith :packageName
 	And Abstract = 0
 	And (Description like '%Examples%' OR Description like '%<example>%' OR Description like '%<pre>%')
-    Group By Parent
+    Order By Parent, sequenceNumber
 }
 
 ClassMethod BuildTestClass(className As %String, Output testClass As %Dictionary.ClassDefinition)
