@@ -54,13 +54,13 @@ ClassMethod TheAnswerForEverything() As %Integer
 }
 ```
 
-Unit tests must be enclosed by tag `<example></example>`. You can add any kind of documentation, but all tests show be within such a tag. Currently, the following assertions are available: `$$$AssertStatusOK`, `$$$AssertStatusNotOK` and `$$$AssertEquals`.
+Unit tests must be enclosed by tag `<example></example>`. You can add any kind of documentation, but all tests must be within such a tag.
 
-Now, start an IRIS terminal session, go to `IRISAPP`namespace, create an instance of the `Core` class passing the class name (`dc.sample.ObjectScript`) and then run the `Execute()` method:
+Now, start an IRIS terminal session, go to `IRISAPP`namespace, create an instance of the `Core` class passing the class name (or its package name for all its classes) and then run the `Execute()` method:
 
 ```
 USER>ZN "IRISAPP"
-IRISAPP>Do ##class(iris.tripleSlash.Core).%New("dc.sample").Execute()
+IRISAPP>Do ##class(iris.tripleSlash.Core).%New("dc.sample.ObjectScript").Execute()
 ```
 
 TripleSlash will interpret this like "Given the result of the `Test()` method, asserts that it is equals to `42`". So, a new class will be create within the unit test:
@@ -130,7 +130,9 @@ Method TestGuessTheNumber()
 }
 ```
 
-# ZPM installation
+Currently, the following assertions are available: `$$$AssertStatusOK`, `$$$AssertStatusNotOK` and `$$$AssertEquals`. New assertions should be added in future.
+
+## ZPM installation
 
 If you would to use TripleSlash into your IRIS instance and start to get your unit tests in a less boilerplate way, just run this command in a IRIS terminal:
 
@@ -164,3 +166,9 @@ code .
 Install [VSCode](https://code.visualstudio.com/), [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) and the [InterSystems ObjectScript Extension Pack](https://marketplace.visualstudio.com/items?itemName=intersystems-community.objectscript-pack) plugin and open the folder in VSCode.
 
 If everything goes like expected, you're ready to test tripleSpash!
+
+## Dream team
+
+* [Henry Pereira](https://community.intersystems.com/user/henry-pereira)
+* [Henrique Dias](https://community.intersystems.com/user/henrique-dias-2)
+* [José Roberto Pereira](https://community.intersystems.com/user/jos%C3%A9-roberto-pereira-0)
