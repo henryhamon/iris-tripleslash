@@ -15,6 +15,15 @@ Property TestPath As %String [ InitialExpression = "/tests" ];
 
 Property Hash As %String [ Private ];
 
+/// Create an instance for generation of unit test from method documentation
+/// 
+/// Tests:
+/// <example>
+/// Set tExpected = "dc.sample"
+/// Set core = ##class(iris.beaker.Core).%New(tExpected)
+/// Write core.ProjectPackage
+/// tExpected, tExpected _ " = " _ core.ProjectPackage
+/// </example>
 Method %OnNew(projectPackage As %String = "", testPath As %String = "", keepTestClasses As %Boolean = "", keepTestFile As %Boolean = "") As %Status [ Private, ServerOnly = 1 ]
 {
 	Set:(projectPackage'="") ..ProjectPackage = projectPackage
@@ -28,12 +37,30 @@ Method %OnNew(projectPackage As %String = "", testPath As %String = "", keepTest
 	Return $$$OK
 }
 
+/// Check if the unit test root folder global ^UnitTestRoot is set correctly
+/// 
+/// <example>
+/// Set current = ^UnitTestRoot
+/// Set ^UnitTestRoot = ""
+/// Do ##class(iris.beaker.Core).EnvValidation()
+/// $$$NotOK
+/// Set ^UnitTestRoot = current
+/// </example>
 ClassMethod EnvValidation() As %Status
 {
     Return:($Get(^UnitTestRoot)="") $$$ERROR(5002, "UnitTestRoot Not Found")
     Return $$$OK
 }
 
+/// Generates unit tests for methods with tests annotated in <example></example> tag.
+/// You can pass a specific class or a package name
+/// 
+/// <example>
+/// Do ##class(iris.beaker.Core).Execute()
+/// $$$NotOK
+/// Do ##class(iris.beaker.Core).Execute()
+/// $$$OK
+/// </example>
 Method Execute(className As %String = "") As %Status
 {
     Set st = $$$OK
