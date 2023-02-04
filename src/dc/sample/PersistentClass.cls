@@ -8,6 +8,12 @@ Property Test As %VarString;
 /// Do ##class(dc.sample.PersistentClass).CreateRecord()
 /// $$$OK
 /// </pre>
+/// Another test
+/// <pre>
+/// Set var = 1
+/// Write var
+/// 1
+/// </pre>
 ClassMethod CreateRecord(ByRef id As %Integer) As %Status
 {
     set sc=$$$OK
@@ -19,6 +25,10 @@ ClassMethod CreateRecord(ByRef id As %Integer) As %Status
 }
 
 /// opens the record by id and reads its property
+/// <pre>
+/// W 1
+/// 1
+/// </pre>
 ClassMethod ReadProperty(id As %Integer) As %Status
 {
     Set sc = $$$OK
