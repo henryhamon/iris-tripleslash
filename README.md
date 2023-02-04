@@ -86,9 +86,9 @@ Class dc.sample.ObjectScript
 ClassMethod GuessTheNumber(pNumber As %Integer) As %Status
 {
     Set st = $$$OK
-    Set theAnswerForEveryThing = 42
+    Set theAnswerForEverything = 42
     Try {
-        Throw:(pNumber '= theAnswerForEveryThing) ##class(%Exception.StatusException).%New("Sorry, wrong number...")
+        Throw:(pNumber '= theAnswerForEverything) ##class(%Exception.StatusException).%New("Sorry, wrong number...")
     } Catch(e) {
         Set st = e.AsStatus()
     }
