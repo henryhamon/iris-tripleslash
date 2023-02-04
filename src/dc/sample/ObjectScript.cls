@@ -16,6 +16,14 @@ ClassMethod TheAnswerForEverything() As %Integer
     Return a
 }
 
+/// Another simple method for testing purpose.
+/// 
+/// <example>
+/// Do ##class(dc.sample.ObjectScript).GuessTheNumber(42)
+/// $$$OK
+/// Do ##class(dc.sample.ObjectScript).GuessTheNumber(23)
+/// $$$NotOK
+/// </example>
 ClassMethod GuessTheNumber(pNumber As %Integer) As %Status
 {
     Set st = $$$OK
