@@ -93,8 +93,8 @@ Method PrepareTestClass(className As %String = "") As %Status [ Private ]
             }
             /// Parser
             $$$ThrowOnError(##class(Parser).GetCodeBlock(rs.Block, .codeBlock))
-            $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock))
-            $$$ThrowOnError(##class(Parser).AssertEql(.codeBlock))
+            $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock, rs.Class))
+            $$$ThrowOnError(##class(Parser).AssertEql(.codeBlock, rs.Class))
             $$$ThrowOnError(..BuildTestMethod(.testMethod, rs.Method, codeBlock))
             Do testClass.Methods.Insert(testMethod)
         }
