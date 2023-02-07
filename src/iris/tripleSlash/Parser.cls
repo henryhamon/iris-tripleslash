@@ -70,7 +70,7 @@ ClassMethod StrToList(block As %String, Output list As %ListOfDataTypes) As %Sta
     Return $$$OK
 }
 
-ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
+ClassMethod AssertOk(ByRef list As %ListOfDataTypes, className As %String = "") As %Status
 {
     Set tSC = $$$OK
     Set asserts = $ListBuild("$$$OK", "$$$NotOK", "$$$ERROR")
@@ -90,12 +90,14 @@ ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
             While $ListNext(asserts, ptr, value) {
                 Set replace = $Replace(replace, value, "")
             }
+            Set replace = ..AddCurrentClassName(replace, className)
             Set codeAux = $Replace(codeAux, code, "\nDo $$$AssertStatus"_assertStr_"(" _ replace _ ")")
         }	
         Set list = ##class(%ListOfDataTypes).%New()
         Set ptr = 0
         Set code = $ListFromString(codeAux, "\n")
         While ($ListNext(code, ptr, line)) {
+            Continue:(line="") //Remove empty line
             Do list.Insert(line)
         }
 	} Catch tException {
@@ -104,7 +106,7 @@ ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
 	Return tSC
 }
 
-ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
+ClassMethod AssertEql(ByRef list As %ListOfDataTypes, className As %String = "") As %Status
 {
     Set tSC = $$$OK
     Set notSymbol = $ListBuild("'", "!")
@@ -122,6 +124,7 @@ ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
                     Set nextLine = $Extract(nextLine, 2, *)
                     Set assertStr = "Not"
                 }
+                Set line = ..AddCurrentClassName(line, className)
                 Set line = "Do $$$Assert"_ assertStr_"Equals("_line_", "_ nextLine _ ")"
             }
             Do code.Insert(line)
@@ -147,6 +150,12 @@ ClassMethod ExtractContent(tag As %String, block As %String) As %String
     }
     Set content = $Replace(content, "\n", $Char(13,10))
     Return content
+}
+
+ClassMethod AddCurrentClassName(method As %String, className As %String = "") As %String [ Private ]
+{
+    Set:((className'="")&&($Extract(method, 1, 2)="..")) method = "##class("_ className_")"_$Extract(method, 2, *)
+    Return method
 }
 
 }
