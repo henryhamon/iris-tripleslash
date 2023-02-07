@@ -52,4 +52,27 @@ Method TestBuildTestMethod()
     Do $$$AssertEquals(tImplementation, tExpected, tImplementation _ "|" _tExpected)
 }
 
+Method TestAddSetup()
+{
+    Set class = ##class(%Dictionary.ClassDefinition).%New()
+    Set description = "Documentation Test"_$Char(13,10)_"<beginAll>"_$Char(13,10)_
+        "Set a = 1"_$Char(13,10)_"</beginAll>"
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Core).AddSetup(.class, description))
+    Set tExpected = 1
+    Set tResults = class.Methods.Count()
+	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
+}
+
+Method TestAddSetupTeardown()
+{
+    Set class = ##class(%Dictionary.ClassDefinition).%New()
+    Set description = "Documentation Test"_$Char(13,10)_"<beginAll>"_$Char(13,10)_
+        "Set a = 1"_$Char(13,10)_"</beginAll>"_$Char(13,10)_"<afterOne>"_$Char(13,10)_
+        "Set a = 1"_$Char(13,10)_"</afterOne>"
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Core).AddSetup(.class, description))
+    Set tExpected = 2
+    Set tResults = class.Methods.Count()
+	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
+}
+
 }
