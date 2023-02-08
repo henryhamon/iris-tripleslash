@@ -154,4 +154,22 @@ Method TestGetMultipleCodeBlock()
 	Do $$$AssertEquals(tResults, tExpected, tExpected_" = "_tResults)
 }
 
+Method TestCurrentClassMethod()
+{
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Do ..Execute()")
+    Do codeBlock.Insert("$$$OK")
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).AssertOk(.codeBlock, "iris.tripleSlash.Core"))
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Do $$$AssertStatusOK(##class(iris.tripleSlash.Core).Execute())"
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected )
+    Set codeBlock = ##class(%ListOfDataTypes).%New()
+    Do codeBlock.Insert("Write ..SetA()")
+    Do codeBlock.Insert("1")
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).AssertEql(.codeBlock, "iris.tripleSlash.Core"))
+    Do $$$AssertStatusOK(##class(iris.tripleSlash.Parser).ListToStr(codeBlock, .block))
+    Set tExpected = "Do $$$AssertEquals(##class(iris.tripleSlash.Core).SetA(), 1)"
+    Do $$$AssertEquals(block, tExpected, block _ " | " _ tExpected)
+}
+
 }

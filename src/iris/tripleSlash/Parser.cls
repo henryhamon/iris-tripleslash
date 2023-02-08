@@ -8,34 +8,12 @@ ClassMethod GetCodeBlock(pBlock As %String, Output codeBlock As %ListOfDataTypes
 	Set tSC = $$$OK
     Set codeBlock = ##class(%ListOfDataTypes).%New()
 	Try {
-        Set block = ..ExtractContent(1, pBlock)
-        Set lstBlock = $ListFromString(block, ..#BL)
-        Set pos = 0
-        While $ListNext(lstBlock, pos, value) {
-            Continue:(value="")
-            Do codeBlock.Insert(value)
-        }
-
+        Set block = ..ExtractContent("example|pre", pBlock)
+        $$$ThrowOnError(..StrToList(block, .codeBlock))
 	} Catch tException {
 		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
 	}
 	Return tSC
-}
-
-ClassMethod ExtractContent(tag As %Integer, block As %String) As %String [ Private ]
-{
-    Set content = ""
-    Set block = $Replace(block, $Char(13,10), "\n")
-    Set regexClean=##class(%Regex.Matcher).%New("(i?)(<(example|pre)>)|(<\/(example|pre)>)")                             
-    Set matcher=##class(%Regex.Matcher).%New("(i?)<(example|pre)>.*?<\/(example|pre)>")                             
-    Set matcher.Text = block
-    While matcher.Locate() {
-        Set regexClean.Text = matcher.Group
-        Set content = content _ regexClean.ReplaceAll("")
-        Set regexClean.Text = ""
-    }
-    Set content = $Replace(content, "\n", $Char(13,10))
-    Return content
 }
 
 ClassMethod RemoveComments(ByRef pValue As %String) As %Status
@@ -80,7 +58,19 @@ ClassMethod ListToStr(list As %ListOfDataTypes, Output block As %String, breakSe
     Return $$$OK
 }
 
-ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
+ClassMethod StrToList(block As %String, Output list As %ListOfDataTypes) As %Status
+{
+    Set list = ##class(%ListOfDataTypes).%New()
+    Set lstBlock = $ListFromString(block, ..#BL)
+    Set pos = 0
+    While $ListNext(lstBlock, pos, value) {
+        Continue:(value="")
+        Do list.Insert(value)
+    }
+    Return $$$OK
+}
+
+ClassMethod AssertOk(ByRef list As %ListOfDataTypes, className As %String = "") As %Status
 {
     Set tSC = $$$OK
     Set asserts = $ListBuild("$$$OK", "$$$NotOK", "$$$ERROR")
@@ -100,12 +90,14 @@ ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
             While $ListNext(asserts, ptr, value) {
                 Set replace = $Replace(replace, value, "")
             }
+            Set replace = ..AddCurrentClassName(replace, className)
             Set codeAux = $Replace(codeAux, code, "\nDo $$$AssertStatus"_assertStr_"(" _ replace _ ")")
         }	
         Set list = ##class(%ListOfDataTypes).%New()
         Set ptr = 0
         Set code = $ListFromString(codeAux, "\n")
         While ($ListNext(code, ptr, line)) {
+            Continue:(line="") //Remove empty line
             Do list.Insert(line)
         }
 	} Catch tException {
@@ -114,7 +106,7 @@ ClassMethod AssertOk(ByRef list As %ListOfDataTypes) As %Status
 	Return tSC
 }
 
-ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
+ClassMethod AssertEql(ByRef list As %ListOfDataTypes, className As %String = "") As %Status
 {
     Set tSC = $$$OK
     Set notSymbol = $ListBuild("'", "!")
@@ -132,6 +124,7 @@ ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
                     Set nextLine = $Extract(nextLine, 2, *)
                     Set assertStr = "Not"
                 }
+                Set line = ..AddCurrentClassName(line, className)
                 Set line = "Do $$$Assert"_ assertStr_"Equals("_line_", "_ nextLine _ ")"
             }
             Do code.Insert(line)
@@ -141,6 +134,28 @@ ClassMethod AssertEql(ByRef list As %ListOfDataTypes) As %Status
 		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
 	}
 	Return tSC
+}
+
+ClassMethod ExtractContent(tag As %String, block As %String) As %String
+{
+    Set content = ""
+    Set block = $Replace(block, $Char(13,10), "\n")
+    Set regexClean=##class(%Regex.Matcher).%New("(i?)(<("_tag_")>)|(<\/("_tag_")>)")                             
+    Set matcher=##class(%Regex.Matcher).%New("(i?)<("_tag_")>.*?<\/("_tag_")>")                             
+    Set matcher.Text = block
+    While matcher.Locate() {
+        Set regexClean.Text = matcher.Group
+        Set content = content _ regexClean.ReplaceAll("")
+        Set regexClean.Text = ""
+    }
+    Set content = $Replace(content, "\n", $Char(13,10))
+    Return content
+}
+
+ClassMethod AddCurrentClassName(method As %String, className As %String = "") As %String [ Private ]
+{
+    Set:((className'="")&&($Extract(method, 1, 2)="..")) method = "##class("_ className_")"_$Extract(method, 2, *)
+    Return method
 }
 
 }

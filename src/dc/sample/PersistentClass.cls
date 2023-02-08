@@ -1,3 +1,12 @@
+/// <beforeOne>
+/// Set obj = ##class(dc.sample.PersistentClass).%New()
+/// Set obj.Test = "Setup"
+/// Do obj.%Save()
+/// </beforeOne>
+/// 
+/// <afterOne>
+/// Do ##class(dc.sample.PersistentClass).%KillExtent()
+/// </afterOne>
 Class dc.sample.PersistentClass Extends %Persistent
 {
 

@@ -93,8 +93,8 @@ Method PrepareTestClass(className As %String = "") As %Status [ Private ]
             }
             /// Parser
             $$$ThrowOnError(##class(Parser).GetCodeBlock(rs.Block, .codeBlock))
-            $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock))
-            $$$ThrowOnError(##class(Parser).AssertEql(.codeBlock))
+            $$$ThrowOnError(##class(Parser).AssertOk(.codeBlock, rs.Class))
+            $$$ThrowOnError(##class(Parser).AssertEql(.codeBlock, rs.Class))
             $$$ThrowOnError(..BuildTestMethod(.testMethod, rs.Method, codeBlock))
             Do testClass.Methods.Insert(testMethod)
         }
@@ -125,19 +125,29 @@ Query FindByPackage(packageName As %String) As %SQLQuery [ SqlProc ]
     Order By Parent, sequenceNumber
 }
 
-ClassMethod BuildTestClass(className As %String, Output testClass As %Dictionary.ClassDefinition)
+ClassMethod BuildTestClass(className As %String, Output testClass As %Dictionary.ClassDefinition) As %Status
 {
-	Set className = ..#TripleSlashPackage _ $Piece(className, ".", *)
-    Set testClass = ##class(%Dictionary.ClassDefinition).%New(className)
+	Set TestClassName = ..#TripleSlashPackage _ $Piece(className, ".", *)
+    Set testClass = ##class(%Dictionary.ClassDefinition).%New(TestClassName)
     Set testClass.Super = "%UnitTest.TestCase"
+    set st = $$$OK
+    Try {
+        Set class = ##class(%Dictionary.ClassDefinition).%OpenId(className)
+        If (($IsObject(class))&&(class.Description'="")) {
+            $$$ThrowOnError(..AddSetup(.testClass, class.Description))
+        }
+    } Catch(e) {
+        Set st = e.AsStatus()
+    }
+    Return st
 }
 
-ClassMethod BuildTestMethod(Output testMethod As %Dictionary.MethodDefinition, name As %String, codeBlock As %ListOfDataTypes) As %Status
+ClassMethod BuildTestMethod(Output testMethod As %Dictionary.MethodDefinition, name As %String, codeBlock As %ListOfDataTypes, prefix As %String = "Test") As %Status
 {
     Set st = $$$OK
     Try {
         Set testMethod = ##class(%Dictionary.MethodDefinition).%New()
-        Set testMethod.Name = "Test"_name
+        Set testMethod.Name = prefix_name
         For idx=1:1:codeBlock.Count() {
             Continue:(codeBlock.GetAt(idx)="")
             Do testMethod.Implementation.WriteLine("  "_codeBlock.GetAt(idx))
@@ -146,6 +156,36 @@ ClassMethod BuildTestMethod(Output testMethod As %Dictionary.MethodDefinition, n
         Set st = e.AsStatus()
     }
     Return st
+}
+
+ClassMethod AddSetup(ByRef class As %Dictionary.ClassDefinition, description As %String) As %Status
+{
+    Set tSC = $$$OK
+    Try {
+        Set allEvents = $ListBuild("beforeAll", "afterAll", "beforeOne", "afterOne")
+        Set ptr = 0
+        While $ListNext(allEvents, ptr, event) {
+            Set codeBlock = ##class(%ListOfDataTypes).%New()
+            Set eventCode = ##class(Parser).ExtractContent(event, .description)
+            $$$ThrowOnError(##class(Parser).StrToList(eventCode, .codeBlock))
+            Continue:(codeBlock.Count() = 0)
+            Set plural = ""
+            Set:($Find(event,"All")) plural = "s"
+            Set event = $ZConvert($Extract(event, 1, 1), "U")_$Extract(event, 2, *)
+            Set mtdName = event_"Test"_plural
+            $$$ThrowOnError(..BuildTestMethod(.testMethod, mtdName, codeBlock, "On"))
+            #Dim testMethod As %Dictionary.MethodDefinition
+            Set testMethod.ReturnType = "%Status"
+            Set exists = $$$NO
+            For idx=1:1:class.Methods.Count() {
+                Set:(class.Methods.GetAt(idx).Name = mtdName) exists = $$$YES
+            }
+            Do:('exists) class.Methods.Insert(testMethod)
+        }
+	} Catch tException {
+		Set:$$$ISOK(tSC) tSC = tException.AsStatus()
+	}
+	Return tSC
 }
 
 Method RunTest(p, pTestPath = "/tests") As %Status [ Private ]
