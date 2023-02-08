@@ -162,7 +162,7 @@ ClassMethod AddSetup(ByRef class As %Dictionary.ClassDefinition, description As 
 {
     Set tSC = $$$OK
     Try {
-        Set allEvents = $ListBuild("beginAll", "afterAll", "beforeOne", "afterOne")
+        Set allEvents = $ListBuild("beforeAll", "afterAll", "beforeOne", "afterOne")
         Set ptr = 0
         While $ListNext(allEvents, ptr, event) {
             Set codeBlock = ##class(%ListOfDataTypes).%New()
