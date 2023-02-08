@@ -8,18 +8,20 @@
 
 ![3slash logo](./assert/3slash.png)
 
-/// (Triple Slash)
+`///` (Triple Slash)
 Generate unit test cases from the documentation.
 
 ## Description
 
- /// TripleSlash allow us to generate tests from code examples found in method descriptions.
+ `///` allow us to generate tests from code examples found in method descriptions.
 
  Inspired in [elixir](https://elixir-lang.org/getting-started/mix-otp/docs-tests-and-with.html) style and in [this idea](https://ideas.intersystems.com/ideas/DP-I-175) from InterSystems Ideas!
 
 ## Usage
 
-In order to show you how use TripleSlash to create your unit tests, let use a simple example.
+### Assertions
+
+In order to show you how use `///` to create your unit tests, let use a simple example.
 
 Let's say you have the following class and method which you'd like to write a unit test:
 
@@ -39,7 +41,7 @@ ClassMethod TheAnswerForEverything() As %Integer
 }
 ```
 
-As you can see, the `TheAnswerForEverything()` method just retruns the number `42`. So, let mark in the method documentation how TripleSlash should create a unit test for this method:
+As you can see, the `TheAnswerForEverything()` method just retruns the number `42`. So, let mark in the method documentation how `///` should create a unit test for this method:
 
 ```objectScript
 /// A simple method for testing purpose.
@@ -63,7 +65,7 @@ USER>ZN "IRISAPP"
 IRISAPP>Do ##class(iris.tripleSlash.Core).%New("dc.sample.ObjectScript").Execute()
 ```
 
-TripleSlash will interpret this like "Given the result of the `Test()` method, asserts that it is equals to `42`". So, a new class will be create within the unit test:
+`///` will interpret this like "Given the result of the `Test()` method, asserts that it is equals to `42`". So, a new class will be create within the unit test:
 
 ```objectScript
 Class iris.tripleSlash.tst.ObjectScript Extends %UnitTest.TestCase
@@ -77,7 +79,7 @@ Method TestTheAnswerForEverything()
 }
 ```
 
-Now let's add a new method  for testing other ways to tell to TripleSlash on how to write your unit tests.
+Now let's add a new method  for testing other ways to tell to `///` on how to write your unit tests.
 
 ```objectScript
 Class dc.sample.ObjectScript
@@ -98,7 +100,7 @@ ClassMethod GuessTheNumber(pNumber As %Integer) As %Status
 }
 ```
 
-As you can see, the `GuessTheNumber()` method expect a number, returns `$$$OK` just when the number `42` is passed or an error for any other value. So, let mark in the method documentation that how TripleSlash should create a unit test for this method:
+As you can see, the `GuessTheNumber()` method expect a number, returns `$$$OK` just when the number `42` is passed or an error for any other value. So, let mark in the method documentation that how `///` should create a unit test for this method:
 
 ```objectScript
 /// Another simple method for testing purpose.
@@ -132,9 +134,78 @@ Method TestGuessTheNumber()
 
 Currently, the following assertions are available: `$$$AssertStatusOK`, `$$$AssertStatusNotOK` and `$$$AssertEquals`. New assertions should be added in future.
 
+### Setup and tear down
+
+`///` can also be used to define methods for unit test setup a tear down. 
+
+Let's check out how to do this using our previous testing class:
+
+```objectscript
+/// A simple class for testing purpose.
+/// 
+/// <beforeAll>
+/// Write "Executes once before any of the test methods in a test class execute. Can set up a test environment."
+/// Return $$$OK
+/// </beforeAll>
+/// 
+/// <afterAll>
+/// Write "Executes once after all of the test methods in a test class execute. Can tear down a test environment."
+/// Return $$$OK
+/// </afterAll>
+/// 
+/// <beforeOne>
+/// Write "Executes immediately before each test method in a test class executes."
+/// Return $$$OK
+/// </beforeOne>
+/// 
+/// <afterOne>
+/// Write "Executes immediately after each test method in a text class executes."
+/// Return $$$OK
+/// </afterOne>
+Class dc.sample.ObjectScript
+{
+    ...
+}
+```
+
+After running `///`, our unit test class had add the methods `OnAfterAllTests()`, `OnAfterOneTest()`, `OnBeforeAllTests()` and `OnBeforeOneTest()`:
+
+```objectscript
+Class iris.tripleSlash.tst.ObjectScript Extends %UnitTest.TestCase [ Not ProcedureBlock ]
+{
+
+Method OnAfterAllTests() As %Status
+{
+    Write "Executes once after all of the test methods in a test class execute. Can tear down a test environment."
+    Return $$$OK
+}
+
+Method OnAfterOneTest() As %Status
+{
+    Write "Executes immediately after each test method in a text class executes."
+    Return $$$OK
+}
+
+Method OnBeforeAllTests() As %Status
+{
+    Write "Executes once before any of the test methods in a test class execute. Can set up a test environment."
+    Return $$$OK
+}
+
+Method OnBeforeOneTest() As %Status
+{
+    Write "Executes immediately before each test method in a test class executes."
+    Return $$$OK
+}
+
+...
+
+}
+```
+
 ## ZPM installation
 
-If you would to use TripleSlash into your IRIS instance and start to get your unit tests in a less boilerplate way, just run this command in a IRIS terminal:
+If you would to use `///` into your IRIS instance and start to get your unit tests in a less boilerplate way, just run this command in a IRIS terminal:
 
 ```
 zpm "install iris-tripleSlash"
