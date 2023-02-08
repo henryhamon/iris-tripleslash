@@ -174,6 +174,8 @@ ClassMethod AddSetup(ByRef class As %Dictionary.ClassDefinition, description As 
             Set event = $ZConvert($Extract(event, 1, 1), "U")_$Extract(event, 2, *)
             Set mtdName = event_"Test"_plural
             $$$ThrowOnError(..BuildTestMethod(.testMethod, mtdName, codeBlock, "On"))
+            #Dim testMethod As %Dictionary.MethodDefinition
+            Set testMethod.ReturnType = "%Status"
             Set exists = $$$NO
             For idx=1:1:class.Methods.Count() {
                 Set:(class.Methods.GetAt(idx).Name = mtdName) exists = $$$YES
