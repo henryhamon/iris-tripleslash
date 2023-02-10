@@ -76,9 +76,9 @@ id   actual amountofsale channel comment dateofsale discount  outletcity outletc
 100    True         3.96       2         2021-10-29       .2       Tokyo         Japan  SKU-708                      1"""
 df = pd.DataFrame(data={'input': input.split("\n")[1:]})
 
-ask("Acting as a software enginnier, give me a set of inputs/expected outputs pairs (2 pairs) for a method that expects a number, returns '$$$OK' just when the number 42 is passed or a '$$$NotOK' for any other value. Format your output as a JSON like this one [{\"input\":\"<input value>\", \"output\":\"<expected value>\"}]", df)
+ask("Acting as a software engineer, give me a set of inputs/expected outputs pairs (2 pairs) for a method that expects a number, returns '$$$OK' just when the number 42 is passed or a '$$$NotOK' for any other value. Format your output as a JSON like this one [{\"input\":\"<input value>\", \"output\":\"<expected value>\"}]", df)
 
-ask("Acting as a software enginnier, give me a set of inputs/expected outputs pairs (2 pairs) for a method that always returns the number 42. Format your output as a JSON like this one [{\"input\":\"<input value>\", \"output\":\"<expected value>\"}]", df)
+ask("Acting as a software engineer, give me a set of inputs/expected outputs pairs (2 pairs) for a method that always returns the number 42. Format your output as a JSON like this one [{\"input\":\"<input value>\", \"output\":\"<expected value>\"}]", df)
 }
 
 }
